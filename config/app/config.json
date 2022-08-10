@@ -1,0 +1,6 @@
+{
+    "log": {
+        "name": "console",
+        "level": "debug"
+    }
+}

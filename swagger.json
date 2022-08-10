@@ -1,0 +1,1086 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Simple books library api",
+    "description": "APIs for managing members, books and issuing of books to members",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "members",
+      "description": "Manage library members"
+    },
+    {
+      "name": "books",
+      "description": "Manage library books"
+    },
+    {
+      "name": "issue",
+      "description": "Manage issuing of books"
+    }
+  ],
+  "servers": [
+    {
+      "url": "/",
+      "description": "Sandbox"
+    }
+  ],
+  "paths": {
+    "/members": {
+      "post": {
+        "tags": [ "members" ],
+        "summary": "Add a member",
+        "description": "Specify member name, address and phone number to add a member",
+        "operationId": "create",
+        "requestBody": {
+          "description": "Details of a member to be added",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [ "members" ],
+        "summary": "Update information of a member",
+        "description": "Update member name, address, mobile etc based on their unique id. The specified data is patched, is does not overwrite existing data",
+        "operationId": "update",
+        "requestBody": {
+          "description": "Member details to be updated",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateMemberRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "response message"
+                    }
+                  },
+                  "example": {
+                    "message": "string"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [ "members" ],
+        "summary": "Search for members",
+        "description": "Search for library members by first name, last name or both",
+        "operationId": "readMultiple",
+        "parameters": [ 
+          {
+            "in": "query",
+            "name": "firstName",
+            "type": "string",
+            "description": "first name of the member to be retrieved"
+          },
+          {
+            "in": "query",
+            "name": "lastName",
+            "type": "string",
+            "description": "last name of the member to be retrieved"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/members/{id}": {
+      "get": {
+        "tags": [ "members" ],
+        "summary": "Get details of a member",
+        "description": "Get details of a member matching the id",
+        "operationId": "read",
+        "parameters": [ 
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": "true",
+            "description": "id of the member to be retrieved"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books": {
+      "post": {
+        "tags": [ "books" ],
+        "summary": "Add a book",
+        "description": "Specify book title, authors and publisher to add a library book",
+        "operationId": "create",
+        "requestBody": {
+          "description": "Details of a book to be added",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addBookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addBookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [ "books" ],
+        "summary": "Update a book",
+        "description": "Update book title, authors, publisher etc based on book's unique id. The specified data is patched, is does not overwrite existing data",
+        "operationId": "update",
+        "requestBody": {
+          "description": "Book details to be updated",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateBookRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "response message"
+                    }
+                  },
+                  "example": {
+                    "message": "string"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [ "books" ],
+        "summary": "Search for books",
+        "description": "Search book by title",
+        "operationId": "readMultiple",
+        "parameters": [ 
+          {
+            "in": "query",
+            "name": "title",
+            "type": "string",
+            "description": "title of the book"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/searchBookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "tags": [ "books" ],
+        "summary": "Get details of a book",
+        "description": "Get details of a book matching the id",
+        "operationId": "read",
+        "parameters": [ 
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": "true",
+            "description": "id of the book to be retrieved"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addBookResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/issue": {
+      "post": {
+        "tags": [ "issue" ],
+        "summary": "Issue a book",
+        "description": "Specify the member id to whom the book is issued and the book id",
+        "operationId": "create",
+        "requestBody": {
+          "description": "Details of issue book",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addIssueRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addIssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [ "issue" ],
+        "summary": "Get details of book issues",
+        "description": "Get details of book issues by specifying either a member id or a book id",
+        "operationId": "getMultiple",
+        "parameters": [ 
+          {
+            "in": "query",
+            "name": "bookId",
+            "type": "string",
+            "description": "id of the book to be checked"
+          },
+          {
+            "in": "query",
+            "name": "memberId",
+            "type": "string",
+            "description": "id of the member to be checked"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/addIssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/issue/{id}": {
+      "delete": {
+        "tags": [ "issue" ],
+        "summary": "Return a book",
+        "description": "Return a book issued to a member, essentially deletes the 'book issued' record",
+        "operationId": "read",
+        "parameters": [ 
+          {
+            "in": "path",
+            "name": "id",
+            "type": "string",
+            "required": "true",
+            "description": "id of the 'book issued' record"
+          }
+         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/deleteIssueResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "addMemberRequest": {
+        "type": "object",
+        "required": [ "firstName", "lastName", "address", "mobile" ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "member's first name" 
+          },
+          "lastName": {
+            "type": "string",
+            "description": "member's last name" 
+          },
+          "address": {
+            "type": "string",
+            "description": "member's address" 
+          },
+          "mobile": {
+            "type": "string",
+            "description": "member's mobile, 10 digit" 
+          }
+        },
+        "example": {
+          "firstName": "Rajesh",
+          "lastName": "Patil",
+          "address": "#23, M G Road, Shivaji Nagar, Sangli, PIN 463012, India",
+          "mobile": "9876543210"
+        }
+      },
+      "addMemberResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Successful response"
+          },
+          "payload": {
+            "type": "object",
+            "description": "details of the member added",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "unique id of the member"
+              },
+              "firstName": {
+                "type": "string",
+                "description": "member's first name" 
+              },
+              "lastName": {
+                "type": "string",
+                "description": "member's last name" 
+              },
+              "address": {
+                "type": "string",
+                "description": "member's address" 
+              },
+              "mobile": {
+                "type": "string",
+                "description": "member's mobile, 10 digit" 
+              }
+            }
+          }
+        },
+        "example": {
+          "_id": "some-id",
+          "firstName": "Rajesh",
+          "lastName": "Patil",
+          "address": "#23, M G Road, Shivaji Nagar, Sangli, PIN 463012, India",
+          "mobile": "9876543210"
+        }
+      },
+      "updateMemberRequest": {
+        "type": "object",
+        "required": [ "_id" ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "member's unique id" 
+          },
+          "firstName": {
+            "type": "string",
+            "description": "member's first name" 
+          },
+          "lastName": {
+            "type": "string",
+            "description": "member's last name" 
+          },
+          "address": {
+            "type": "string",
+            "description": "member's address" 
+          },
+          "mobile": {
+            "type": "string",
+            "description": "member's mobile, 10 digit" 
+          }
+        },
+        "example": {
+          "_id": "some-id",
+          "firstName": "Rajesh",
+          "lastName": "Patil",
+          "address": "#23, M G Road, Shivaji Nagar, Sangli, PIN 463012, India",
+          "mobile": "9876543210"
+        }
+      },
+      "searchMemberRequest": {
+        "type": "object",
+        "example": {
+          "firstName": "Rajesh",
+          "lastName": "Patil"
+        }
+      },
+      "searchMemberResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "response description"
+          },
+          "payload": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/addMemberResponse"
+            }
+          }
+        }
+      },
+      "addBookRequest": {
+        "type": "object",
+        "required": [ "title", "authors", "publisher" ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "book title" 
+          },
+          "authors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "author name" 
+          },
+          "publisher": {
+            "type": "string",
+            "description": "book publisher" 
+          }
+        },
+        "example": {
+          "title": "Contact",
+          "authors": ["Karl Sagan"],
+          "publisher": "Random House"
+        }
+      },
+      "addBookResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Successful response"
+          },
+          "payload": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "unique id for the book"
+              },
+              "title": {
+                "type": "string",
+                "description": "book title" 
+              },
+              "authors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "author name" 
+              },
+              "publisher": {
+                "type": "string",
+                "description": "book publisher" 
+              }
+            }
+          }
+        },
+        "example": {
+          "message": "string",
+          "payload": {
+            "_id": "some-id",
+            "title": "Contact",
+            "authors": ["Karl Sagan"],
+            "publisher": "Random House"
+        }
+        }
+      },
+      "updateBookRequest": {
+        "type": "object",
+        "required": [ "_id" ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "book id" 
+          },
+          "title": {
+            "type": "string",
+            "description": "book title"
+          },
+          "authors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "author name" 
+          },
+          "publisher": {
+            "type": "string",
+            "description": "book publisher" 
+          }
+        },
+        "example": {
+          "_id": "some-id",
+          "title": "Contact",
+          "authors": ["Karl Sagan"],
+          "publisher": "Random House"
+        }
+      },
+      "searchBookResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "response description"
+          },
+          "payload": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "_id": {
+                  "type": "string",
+                  "description": "book id" 
+                },
+                "title": {
+                  "type": "string",
+                  "description": "book title"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "book authors" 
+                },
+                "publisher": {
+                  "type": "string",
+                  "description": "book publisher" 
+                }
+              }
+            }
+          }
+        }
+      },
+      "addIssueRequest": {
+        "type": "object",
+        "required": [ "bookId", "memberId" ],
+        "properties": {
+          "bookId": {
+            "type": "string",
+            "description": "Id of the book to be issued" 
+          },
+          "memberId": {
+            "type": "string",
+            "description": "Id of the member to whom the book has to be issued" 
+          }
+        },
+        "example": {
+          "bookId": "book-id",
+          "memberId": "member-id"
+        }
+      },
+      "addIssueResponse": {
+        "type": "object",
+        "description": "Details of the member and the book",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Successful response"
+          },
+          "payload": {
+            "type": "object",
+            "description": "details of book and the member to whom it is issued",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "unique id representing issuinng of the book to the member"
+              },
+              "book": {
+                "type": "object",
+                "description": "Details of book",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "unique id of the book"
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "book title"
+                  },
+                  "authors": {
+                    "type": "array",
+                    "description": "book authors",
+                    "items": {
+                      "type": "string",
+                      "description": "author name"
+                    }
+                  }
+                }
+              },
+              "member": {
+                "type": "object",
+                "description": "Details of member",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "unique id of the member"
+                  },
+                  "firstName": {
+                    "type": "string",
+                    "description": "first name of the member"
+                  },
+                  "lastName": {
+                    "type": "string",
+                    "description": "last name of the member"
+                  }
+                }
+              },
+              "status": {
+                "type": "string",
+                "description": "book issue status"
+              }
+            }
+          }
+        },
+        "example": {
+          "_id": "issue-id",
+          "book": {
+            "id": "book-id",
+            "title": "Jokes for dummies",
+            "authors": [
+              "W H Jenkins",
+              "Clara C Turner"
+            ]
+          },
+          "member": {
+            "id": "member-id",
+            "firstName": "Rajesh",
+            "lastName": "Patil"
+          },
+          "status": "issued"
+        }
+      },
+      "deleteIssueResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "book returned response"
+          }
+        }
+      },
+      "BasicErrorMessage": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "InvalidRequestError": {
+        "description": "Missing or invalid required fields in request body",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "InvalidGetRequestError": {
+        "description": "Invalid fields in request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "UnauthorizedError": {
+        "description": "Logged in user is unauthorized to make this request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "NotFoundError": {
+        "description": "Resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "NotAllowedError": {
+        "description": "Method not allowed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Unexpected server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/BasicErrorMessage"
+            }
+          }
+        }
+      }
+    }
+  }
+}
